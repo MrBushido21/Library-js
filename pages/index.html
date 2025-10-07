@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>Login:</div>
+    <div action="" style="display: flex; flex-direction: column; row-gap: 10px;">
+        <div><input id="username" placeholder="username" type="text" style="width: 300px;" height="20px" ;
+                border-radius="10px"></div>
+        <div><input id="password" placeholder="password" type="text" style="width: 300px;" height="20px" ;
+                border-radius="10px"></div>
+        <button id="regBtn">reg</button>
+        <button id="logBtn">log</button>
+    </div>
+
+    <script>
+        document.getElementById("regBtn").addEventListener("click", () => {
+            // Получаем значения из инпутов
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Создаём объект newUser
+            const newUser = {
+                username: username,
+                password: password
+            };
+
+            // Отправляем на сервер
+            fetch("http://localhost:3000/auth/registration", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newUser)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Ответ сервера:", data);
+                })
+                .catch(err => {
+                    console.error("Ошибка:", err);
+                });
+            
+        });
+        document.getElementById("logBtn").addEventListener("click", () => {
+            // Получаем значения из инпутов
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Создаём объект newUser
+            const newUser = {
+                username: username,
+                password: password
+            };
+
+            // Отправляем на сервер
+            fetch("http://localhost:3000/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newUser)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Ответ сервера:", data);
+                })
+                .catch(err => {
+                    console.error("Ошибка:", err);
+                });
+            
+        });
+    </script>
+</body>
+
+</html>
