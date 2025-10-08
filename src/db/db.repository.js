@@ -17,23 +17,33 @@ export const updateUsers = async (user) => {
         `, [username, password, id]);
 };
 //GetOne
-export const getUser = async (id) => {
-    const data = await sqlGet(`
+export const getUserForId = async (id) => {
+    const user = await sqlGet(`
             SELECT * FROM users
             WHERE id = ?;
         `, [id]);
-    if (!isUser(data)) {
-        console.log(`Unknow format of data, Data: ${data}`);
+    if (!isUser(user)) {
+        console.log(`Unknow format of data, Data: ${user}`);
     }
-    return data;
+    return user;
+};
+export const getUserForUsername = async (username) => {
+    const user = await sqlGet(`
+           SELECT * FROM users
+           WHERE username = ?
+       `, [username]);
+    if (!isUser(user)) {
+        console.log(`Unknow format of data, Data: ${user}`);
+    }
+    return user;
 };
 //GetAll
 export const getUsers = async () => {
-    const data = await sqlAll(`SELECT * FROM users`);
-    if (!Array.isArray(data)) {
-        console.log(`Unknow format of data, Data: ${data}`);
+    const users = await sqlAll(`SELECT * FROM users`);
+    if (!Array.isArray(users)) {
+        console.log(`Unknow format of data, Data: ${users}`);
     }
-    return data;
+    return users;
 };
 //Delete
 export const deleteUser = async (id) => {
@@ -41,5 +51,8 @@ export const deleteUser = async (id) => {
         DELETE FROM users
         WHERE id = ?
         `, [id]);
+};
+export const deleteAll = async () => {
+    await sqlRun(`DELETE FROM users`);
 };
 //# sourceMappingURL=db.repository.js.map

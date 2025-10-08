@@ -1,16 +1,17 @@
 import { Router, type Request, type Response} from "express";
 import type { UsersType } from "../types/types.js";
-import sqlite3 from "sqlite3";
-import { createUsers } from "../db/db.repository.js";
+import { createUsers, getUserForUsername } from "../db/db.repository.js";
 
 const router = Router();
 
-let users: UsersType[] = [];
-
 // регистрация
-router.post("/registration", (req: Request<{}, {}, UsersType>, res: Response) => {
+router.post("/registration", async (req: Request<{}, {}, UsersType>, res: Response) => {
   const { username, password } = req.body;
   
+  const data = await getUserForUsername(username)
+  if (data) {
+    return res.send("username already taken")
+  }
   
   const user: UsersType = {
       id: Math.floor(Math.random() * 100000),
@@ -22,8 +23,19 @@ router.post("/registration", (req: Request<{}, {}, UsersType>, res: Response) =>
 });
 
 // логин
-router.post("/login", (req: Request<{}, {}, UsersType>, res: Response) => {
-    
+router.post("/login", async (req: Request<{}, {}, UsersType>, res: Response) => {
+  const {username, password} = req.body
+  const user = await getUserForUsername(username)
+  if (!user) {
+    console.log('Unknown user')
+    return res.send('Unkorrect login or password')
+  }
+  if (username === user.username && password === user.password) {
+    return res.send("Ok")
+  } else {
+    return res.send("Unkorrect login or password")
+  }
+  
 });
 
 export default router;

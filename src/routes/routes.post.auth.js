@@ -1,11 +1,13 @@
 import { Router } from "express";
-import sqlite3 from "sqlite3";
-import { createUsers } from "../db/db.repository.js";
+import { createUsers, getUserForUsername } from "../db/db.repository.js";
 const router = Router();
-let users = [];
 // регистрация
-router.post("/registration", (req, res) => {
+router.post("/registration", async (req, res) => {
     const { username, password } = req.body;
+    const data = await getUserForUsername(username);
+    if (data) {
+        return res.send("username already taken");
+    }
     const user = {
         id: Math.floor(Math.random() * 100000),
         username: username,
@@ -14,7 +16,19 @@ router.post("/registration", (req, res) => {
     createUsers(user);
 });
 // логин
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+    const user = await getUserForUsername(username);
+    if (!user) {
+        console.log('Unknown user');
+        return res.send('Unkorrect login or password');
+    }
+    if (username === user.username && password === user.password) {
+        return res.send("Ok");
+    }
+    else {
+        return res.send("Unkorrect login or password");
+    }
 });
 export default router;
 //# sourceMappingURL=routes.post.auth.js.map

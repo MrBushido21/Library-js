@@ -20,24 +20,38 @@ export const updateUsers =  async (user: UsersType): Promise<void> => {
         `, [username, password, id])
 }
 //GetOne
-export const getUser =  async (id: number): Promise<UsersType> => {
-    const data: UsersType = await sqlGet(`
+export const getUserForId =  async (id: number): Promise<UsersType> => {
+    const user: UsersType = await sqlGet(`
             SELECT * FROM users
             WHERE id = ?;
         `, [id])
-    if (!isUser(data)) {
-        console.log(`Unknow format of data, Data: ${data}`);      
+    if (!isUser(user)) {
+        console.log(`Unknow format of data, Data: ${user}`);      
     } 
-    return data
+    return user
+}
+
+
+export const getUserForUsername = async (username: string): Promise<UsersType> => {
+    const user: UsersType  = await sqlGet(`
+           SELECT * FROM users
+           WHERE username = ?
+       `,
+       [username]
+       );   
+       if (!isUser(user)) {
+           console.log(`Unknow format of data, Data: ${user}`);      
+       } 
+       return user
 }
 //GetAll
 export const getUsers =  async (): Promise<UsersType[]> => {
-   const data:UsersType[] = await sqlAll(`SELECT * FROM users`); 
-   if(!Array.isArray(data)) {
-    console.log(`Unknow format of data, Data: ${data}`);
+   const users:UsersType[] = await sqlAll(`SELECT * FROM users`); 
+   if(!Array.isArray(users)) {
+    console.log(`Unknow format of data, Data: ${users}`);
    } 
    
-   return data
+   return users
 }
 
 //Delete
@@ -46,4 +60,7 @@ export const deleteUser = async (id: number): Promise<void> => {
         DELETE FROM users
         WHERE id = ?
         `, [id]);
+}
+export const deleteAll = async (): Promise<void> => {
+    await sqlRun(`DELETE FROM users`);
 }
