@@ -7,5 +7,11 @@ router.get("/registration", (req: Request, res: Response) => {
 router.get("/login", (req: Request, res: Response) => {
     res.sendFile("index.html", { root: "./pages" });
 });
+router.get("/admin", (req: Request, res: Response) => {
+    res.sendFile("admin.html", { root: "./pages" });
+});
+router.get("/books", (req: Request, res: Response) => {
+    res.sendFile("book.html", { root: "./pages" });
+});
 
 export default router

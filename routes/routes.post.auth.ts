@@ -20,6 +20,8 @@ router.post("/registration", async (req: Request<{}, {}, UsersType>, res: Respon
   }
   
   createUsers(user)
+
+  return res.send(1)
 });
 
 // логин
@@ -31,7 +33,7 @@ router.post("/login", async (req: Request<{}, {}, UsersType>, res: Response) => 
     return res.send('Unkorrect login or password')
   }
   if (username === user.username && password === user.password) {
-    return res.send("Ok")
+    return res.send(1)
   } else {
     return res.send("Unkorrect login or password")
   }

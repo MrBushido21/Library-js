@@ -14,6 +14,7 @@ router.post("/registration", async (req, res) => {
         password: password
     };
     createUsers(user);
+    return res.send(1);
 });
 // логин
 router.post("/login", async (req, res) => {
@@ -24,7 +25,7 @@ router.post("/login", async (req, res) => {
         return res.send('Unkorrect login or password');
     }
     if (username === user.username && password === user.password) {
-        return res.send("Ok");
+        return res.send(1);
     }
     else {
         return res.send("Unkorrect login or password");
