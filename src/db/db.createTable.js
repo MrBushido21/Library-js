@@ -3,17 +3,12 @@ export const createTableUsers = async () => {
     await sqlRun(`
         CREATE TABLE IF NOT EXISTS users (
         id NUMBER PRIMARY KEY,
-        username TEXT NOT NULL,
-        password TEXT NOT NULL
-        );
-        `);
-};
-export const createTableBooks = async () => {
-    await sqlRun(`
-        CREATE TABLE IF NOT EXISTS users (
-        id NUMBER PRIMARY KEY,
-        username TEXT NOT NULL,
-        password TEXT NOT NULL
+        email TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        status TEXT NOT NULL,
+        refresh_token TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
         );
         `);
 };

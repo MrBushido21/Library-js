@@ -3,21 +3,21 @@ import { isUser } from "../utils/utils.js";
 import { sqlAll, sqlGet, sqlRun } from "./db.constructor.js";
 // Create
 export const createUsers =  async (user: UsersType): Promise<void> => {
-    const {id, password, username} = user
+    const {id, password_hash, email, status, created_at, updated_at} = user
 
     await sqlRun(`
-            INSERT INTO users (id, username, password)
-            VALUES (?,?,?);        
-        `, [id, username, password])
+            INSERT INTO users (id, email, password_hash, status, created_at, updated_at)
+            VALUES (?,?,?,?,?,?);        
+        `, [id, email, password_hash, status, created_at, updated_at])
 }
 //Update
 export const updateUsers =  async (user: UsersType): Promise<void> => {
-    const {id, password, username} = user
+    const {id, password_hash, email} = user
 
     await sqlRun(`
-            UPDATE users SET username = ? password = ? 
+            UPDATE users SET email = ? password_hash = ? 
             WHERE id = ?             
-        `, [username, password, id])
+        `, [email, password_hash, id])
 }
 //GetOne
 export const getUserForId =  async (id: number): Promise<UsersType> => {
@@ -32,15 +32,15 @@ export const getUserForId =  async (id: number): Promise<UsersType> => {
 }
 
 
-export const getUserForUsername = async (username: string): Promise<UsersType> => {
+export const getUserForEmail = async (email: string): Promise<UsersType> => {
     const user: UsersType  = await sqlGet(`
            SELECT * FROM users
-           WHERE username = ?
+           WHERE email = ?
        `,
-       [username]
+       [email]
        );   
        if (!isUser(user)) {
-           console.log(`Unknow format of data, Data: ${user}`);      
+           console.log(`Unknow format of data in 'getUserForEmail', Data: ${user}`);      
        } 
        return user
 }

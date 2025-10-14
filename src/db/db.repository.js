@@ -2,19 +2,19 @@ import { isUser } from "../utils/utils.js";
 import { sqlAll, sqlGet, sqlRun } from "./db.constructor.js";
 // Create
 export const createUsers = async (user) => {
-    const { id, password, username } = user;
+    const { id, password_hash, email, status, created_at, updated_at } = user;
     await sqlRun(`
-            INSERT INTO users (id, username, password)
-            VALUES (?,?,?);        
-        `, [id, username, password]);
+            INSERT INTO users (id, email, password_hash, status, created_at, updated_at)
+            VALUES (?,?,?,?,?,?);        
+        `, [id, email, password_hash, status, created_at, updated_at]);
 };
 //Update
 export const updateUsers = async (user) => {
-    const { id, password, username } = user;
+    const { id, password_hash, email } = user;
     await sqlRun(`
-            UPDATE users SET username = ? password = ? 
+            UPDATE users SET email = ? password_hash = ? 
             WHERE id = ?             
-        `, [username, password, id]);
+        `, [email, password_hash, id]);
 };
 //GetOne
 export const getUserForId = async (id) => {
@@ -27,13 +27,13 @@ export const getUserForId = async (id) => {
     }
     return user;
 };
-export const getUserForUsername = async (username) => {
+export const getUserForEmail = async (email) => {
     const user = await sqlGet(`
            SELECT * FROM users
-           WHERE username = ?
-       `, [username]);
+           WHERE email = ?
+       `, [email]);
     if (!isUser(user)) {
-        console.log(`Unknow format of data, Data: ${user}`);
+        console.log(`Unknow format of data in 'getUserForEmail', Data: ${user}`);
     }
     return user;
 };

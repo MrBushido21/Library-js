@@ -23,8 +23,9 @@ app.get('/', async (req, res) => {
   const data = await getUsers() 
   res.send(data)
 })
+
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Example app listening on port ${port}`);
 })
 }
 
