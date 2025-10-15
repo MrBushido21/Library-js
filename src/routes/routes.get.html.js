@@ -9,5 +9,8 @@ router.get("/admin", (req, res) => {
 router.get("/books", (req, res) => {
     res.sendFile("book.html", { root: "./pages" });
 });
+router.get("/refresh", (req, res) => {
+    res.sendFile("refresh.html", { root: "./pages" });
+});
 export default router;
 //# sourceMappingURL=routes.get.html.js.map

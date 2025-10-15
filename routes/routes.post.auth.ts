@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import type { PayloadType, UsersType } from "../types/types.js";
-import { createUsers, getUserForEmail } from "../db/db.repository.js";
+import { createUsers, getUserForEmail, getUserForToken } from "../db/db.repository.js";
 import { comparePass, createToken, dateNow, hashedPass, refreshToken } from "../utils/utils.js";
 
 
@@ -71,7 +71,7 @@ router.post("/refresh", async (req: Request<{}, {}, UsersType, {}>, res: Respons
     res.status(403).json({message: 'haven`t token'})
   }
 
-  const data = await getUserForEmail(refresh_token)
+  const data = await getUserForToken(refresh_token)
   if (!data) {
     res.status(403).json({message: 'Not found user'})
   }

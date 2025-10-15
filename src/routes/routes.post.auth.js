@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUsers, getUserForEmail } from "../db/db.repository.js";
+import { createUsers, getUserForEmail, getUserForToken } from "../db/db.repository.js";
 import { comparePass, createToken, dateNow, hashedPass, refreshToken } from "../utils/utils.js";
 const router = Router();
 // регистрация
@@ -52,7 +52,7 @@ router.post("/refresh", async (req, res) => {
     if (!refresh_token) {
         res.status(403).json({ message: 'haven`t token' });
     }
-    const data = await getUserForEmail(refresh_token);
+    const data = await getUserForToken(refresh_token);
     if (!data) {
         res.status(403).json({ message: 'Not found user' });
     }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Отправка Refresh запроса</title>
+</head>
+<body>
+  <h2>Отправка запроса на /refresh</h2>
+  <button id="sendBtn">Отправить запрос</button>
+
+  <script>
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const data = {
+        email: "token1",
+        id: 73719,
+        status: "user",
+        refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRva2VuMSIsImlkIjo3MzcxOSwic3RhdHVzIjoidXNlciIsImlhdCI6MTc2MDUzMjg4NywiZXhwIjoxNzYwNTMzNDg3fQ.qBOJEkYNuiryI2HhFgWQ3rDyKWE2VWQqWSf0zwwhiT4"
+      };
+
+      fetch("http://localhost:3000/refresh", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+        .then(res => res.json())
+        .then(response => {
+          console.log("Ответ от сервера:", response);
+          alert("Ответ от сервера: " + JSON.stringify(response));
+        })
+        .catch(error => {
+          console.error("Ошибка:", error);
+          alert("Ошибка при запросе: " + error);
+        });
+    });
+  </script>
+</body>
+</html>

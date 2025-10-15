@@ -10,5 +10,8 @@ router.get("/admin", (req: Request, res: Response) => {
 router.get("/books", (req: Request, res: Response) => {
     res.sendFile("book.html", { root: "./pages" });
 });
+router.get("/refresh", (req: Request, res: Response) => {
+    res.sendFile("refresh.html", { root: "./pages" });
+});
 
 export default router
