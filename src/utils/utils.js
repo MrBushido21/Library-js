@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 //Проверка на пользователя
 export const isUser = (data) => {
     const user = data;
@@ -14,5 +15,32 @@ export const hashedPass = async (password_hash) => {
 //Сравнение паролей
 export const comparePass = async (password_hash, passwordInput) => {
     return await bcrypt.compare(password_hash, passwordInput);
+};
+// Создание токена
+function createTokenUtils(payload, secret) {
+    const token = jwt.sign(payload, secret, {
+        algorithm: "HS256",
+        expiresIn: "10m"
+    });
+    return token;
+}
+const accsesSecret = "super_secret_key_accses";
+const refreshSecret = "super_secret_key_refresh";
+export const createToken = (payload) => {
+    const accsesToken = createTokenUtils(payload, accsesSecret);
+    const refreshToken = createTokenUtils(payload, refreshSecret);
+    const tokensArr = [accsesToken, refreshToken];
+    return tokensArr;
+};
+// Првоерка токена
+export const refreshToken = (refresh_token, payload) => {
+    try {
+        const decoded = jwt.verify(refresh_token, refreshSecret);
+        const accsesToken = createTokenUtils(payload, accsesSecret);
+        return accsesToken;
+    }
+    catch (error) {
+        return null;
+    }
 };
 //# sourceMappingURL=utils.js.map
