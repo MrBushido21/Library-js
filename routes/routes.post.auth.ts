@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import type { PayloadType, UsersType } from "../types/types.js";
 import { createUsers, getUserForEmail, getUserForToken } from "../db/db.repository.js";
-import { comparePass, createToken, dateNow, hashedPass, refreshToken } from "../utils/utils.js";
+import { comparePass, createToken, dateNow, hashedPass, options, refreshToken } from "../utils/utils.js";
 
 
 const router = Router();
@@ -16,12 +16,12 @@ router.post("/registration", async (req: Request<{}, {}, UsersType>, res: Respon
   if (data) {
     return res.send("email already taken")
   }
-  
+
   const user: UsersType = {
     id: Math.floor(Math.random() * 100000),
     email: email,
     password_hash: hashed,
-    status: "user", 
+    status: "user",
     refresh_token: "",
     created_at: dateNow,
     updated_at: dateNow
@@ -33,14 +33,19 @@ router.post("/registration", async (req: Request<{}, {}, UsersType>, res: Respon
     status: user.status
   }
 
-  
+
   const token = createToken(payload)
-  if (token[1]) {
-    user.refresh_token = token[1]
+  const [access_token, refresh_token] = token
+
+  if (refresh_token) {
+    user.refresh_token = refresh_token
   }
-  
+
   createUsers(user)
-  return res.json(token[0])
+  res.cookie("refresh_token", refresh_token, options);
+  res.json({
+    access_token: access_token,
+  })
 });
 
 // логин
@@ -48,32 +53,39 @@ router.post("/login", async (req: Request<{}, {}, UsersType, {}>, res: Response)
   const { email, password_hash } = req.body;
 
   const data = await getUserForEmail(email)
-  
+
   const payload: PayloadType = {
     email: email,
     id: data.id,
     status: data.status
   }
   const token = createToken(payload)
+  const [access_token, refresh_token] = token
 
-  const isMatch:boolean = await comparePass(password_hash, data.password_hash)
+  const isMatch: boolean = await comparePass(password_hash, data.password_hash)
 
-  if (data && isMatch) { 
-    return res.json(token[0])
+  if (data && isMatch) {
+    res.cookie("refresh_token", refresh_token, options);
+    res.json({
+      access_token: access_token,
+    })
   }
   return res.send("Unkorrect login or password")
 });
 
-
+//Обновление акцес токена
 router.post("/refresh", async (req: Request<{}, {}, UsersType, {}>, res: Response) => {
-  const { refresh_token, email, id, status} = req.body
+  const { email, id, status } = req.body
+  
+  const refresh_token = req.cookies.refresh_token
+  
   if (!refresh_token) {
-    res.status(403).json({message: 'haven`t token'})
+   return res.status(403).json({ message: 'haven`t token' })
   }
 
   const data = await getUserForToken(refresh_token)
   if (!data) {
-    res.status(403).json({message: 'Not found user'})
+   return res.status(403).json({ message: 'Not found user' })
   }
 
   const payload: PayloadType = {
@@ -83,7 +95,18 @@ router.post("/refresh", async (req: Request<{}, {}, UsersType, {}>, res: Respons
   }
 
   const token = refreshToken(refresh_token, payload)
-  return res.json(token)
+  
+  if (!token) {
+   return res.status(403).json({ message: 'Uncorrect token'})
+  }
+
+  res.json({access_token: token})
 })
+
+//Логаут
+router.post("/logout", (req, res) => {
+  res.clearCookie("refresh_token"); // удаляем cookie
+  res.json({ message: "Logged out" });
+});
 
 export default router;

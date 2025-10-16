@@ -1,6 +1,16 @@
 import bcrypt from "bcryptjs";
 import type { PayloadType, UsersType } from "../types/types.js";
 import jwt from "jsonwebtoken"
+import type { CookieOptions } from "express";
+
+//Константы
+export const options: CookieOptions = {
+  httpOnly: true,
+  secure: true, 
+  sameSite: "strict",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+}
+
 
 //Проверка на пользователя
 export const isUser = (data: unknown): data is UsersType => {
@@ -49,10 +59,11 @@ export const createToken = (payload: PayloadType):string[] => {
 // Првоерка токена
 export const refreshToken = (refresh_token: string, payload:PayloadType): string | null => {
     try {
-        const decoded = jwt.verify(refresh_token, refreshSecret)
-        const accsesToken = createTokenUtils(payload, accsesSecret)
+        const decoded = jwt.verify(refresh_token, refreshSecret)       
+        const accsesToken = createTokenUtils(payload, accsesSecret)  
         return accsesToken
       } catch (error) {
+        console.error(error);
         return null
       }
 }

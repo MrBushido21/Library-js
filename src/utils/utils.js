@@ -1,5 +1,12 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+//Константы
+export const options = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+};
 //Проверка на пользователя
 export const isUser = (data) => {
     const user = data;
@@ -40,6 +47,7 @@ export const refreshToken = (refresh_token, payload) => {
         return accsesToken;
     }
     catch (error) {
+        console.error(error);
         return null;
     }
 };
