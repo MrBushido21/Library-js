@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import type { PayloadType, UsersType } from "../types/types.js";
-import jwt from "jsonwebtoken"
-import type { CookieOptions } from "express";
+import jwt, { type JwtPayload } from "jsonwebtoken"
+import type { CookieOptions, NextFunction, Request, Response } from "express";
 
 //Константы
 export const options: CookieOptions = {
@@ -59,11 +59,38 @@ export const createToken = (payload: PayloadType):string[] => {
 // Првоерка токена
 export const refreshToken = (refresh_token: string, payload:PayloadType): string | null => {
     try {
-        const decoded = jwt.verify(refresh_token, refreshSecret)       
+        jwt.verify(refresh_token, refreshSecret)       
         const accsesToken = createTokenUtils(payload, accsesSecret)  
         return accsesToken
       } catch (error) {
         console.error(error);
         return null
       }
+}
+
+//проверка атентификации по токену
+export const checkAuth = (req: Request, res: Response, next: NextFunction): void | Response => {
+    const token = req.headers.authorization
+  
+  if (!token) {
+    return res.status(403).json({ message: 'haven`t token' })
+  }
+    try {
+        jwt.verify(token, accsesSecret)       
+        next()
+      } catch (error) {
+        console.error(error);
+        return res.status(403).json({message: 'Uncorrect token'})
+      }
+}
+
+//Декодирование токена
+export const decodedToken = (token:string):PayloadType | null=> {
+    try {
+        const decoded = jwt.verify(token, accsesSecret) as jwt.JwtPayload & PayloadType
+        return decoded
+    } catch (error) {
+        console.error(error);
+        return null
+    }
 }

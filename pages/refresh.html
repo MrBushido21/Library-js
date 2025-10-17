@@ -18,10 +18,11 @@
         refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRva2VuMSIsImlkIjo3MzcxOSwic3RhdHVzIjoidXNlciIsImlhdCI6MTc2MDUzMjg4NywiZXhwIjoxNzYwNTMzNDg3fQ.qBOJEkYNuiryI2HhFgWQ3rDyKWE2VWQqWSf0zwwhiT4"
       };
 
-      fetch("http://localhost:3000/refresh", {
+      fetch("http://localhost:3000/admin", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluIiwiaWQiOjYwOTAyLCJzdGF0dXMiOiJhZG1pbiIsImlhdCI6MTc2MDcwMzk0OSwiZXhwIjoxNzYwNzA0NTQ5fQ.VDMUHfLj89vAizJ-6QC2tbCAj8_GPC3rqrbs41xgCjs"
         },
         body: JSON.stringify(data)
       })

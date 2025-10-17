@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createUsers, getUserForEmail, getUserForToken } from "../db/db.repository.js";
-import { comparePass, createToken, dateNow, hashedPass, options, refreshToken } from "../utils/utils.js";
+import { checkAuth, comparePass, createToken, dateNow, decodedToken, hashedPass, options, refreshToken } from "../utils/utils.js";
 const router = Router();
 // регистрация
 router.post("/registration", async (req, res) => {
@@ -81,6 +81,18 @@ router.post("/refresh", async (req, res) => {
 router.post("/logout", (req, res) => {
     res.clearCookie("refresh_token"); // удаляем cookie
     res.json({ message: "Logged out" });
+});
+//Админ
+router.post('/admin', checkAuth, (req, res) => {
+    const token = req.headers.authorization;
+    let decoded = null;
+    if (token) {
+        decoded = decodedToken(token);
+    }
+    const status = decoded?.status;
+    if (status) {
+        status === "admin" ? res.status(200).json({ message: "You are admin" }) : res.status(403).json({ message: "You are not admin" });
+    }
 });
 export default router;
 //# sourceMappingURL=routes.post.auth.js.map

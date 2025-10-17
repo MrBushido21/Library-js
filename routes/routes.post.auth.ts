@@ -1,7 +1,8 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type CookieOptions, type Request, type Response } from "express";
 import type { PayloadType, UsersType } from "../types/types.js";
 import { createUsers, getUserForEmail, getUserForToken } from "../db/db.repository.js";
-import { comparePass, createToken, dateNow, hashedPass, options, refreshToken } from "../utils/utils.js";
+import { checkAuth, comparePass, createToken, dateNow, decodedToken, hashedPass, options, refreshToken } from "../utils/utils.js";
+import type { JwtPayload } from "jsonwebtoken";
 
 
 const router = Router();
@@ -104,9 +105,24 @@ router.post("/refresh", async (req: Request<{}, {}, UsersType, {}>, res: Respons
 })
 
 //Логаут
-router.post("/logout", (req, res) => {
+router.post("/logout", (req:Request<{}, {}, {}, {}, CookieOptions>, res:Response) => {
   res.clearCookie("refresh_token"); // удаляем cookie
   res.json({ message: "Logged out" });
 });
 
+
+//Админ
+router.post('/admin', checkAuth, (req: Request, res: Response) => {
+  const token = req.headers.authorization
+  let decoded = null
+  if (token) {
+    decoded = decodedToken(token)
+  }
+  const status = decoded?.status
+
+  if (status) {
+    status === "admin" ? res.status(200).json({message: "You are admin"}) : res.status(403).json({message: "You are not admin"})
+  }
+  
+})
 export default router;

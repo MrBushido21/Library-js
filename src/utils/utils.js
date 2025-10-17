@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, {} from "jsonwebtoken";
 //Константы
 export const options = {
     httpOnly: true,
@@ -42,9 +42,35 @@ export const createToken = (payload) => {
 // Првоерка токена
 export const refreshToken = (refresh_token, payload) => {
     try {
-        const decoded = jwt.verify(refresh_token, refreshSecret);
+        jwt.verify(refresh_token, refreshSecret);
         const accsesToken = createTokenUtils(payload, accsesSecret);
         return accsesToken;
+    }
+    catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+//проверка атентификации по токену
+export const checkAuth = (req, res, next) => {
+    const token = req.headers.authorization;
+    if (!token) {
+        return res.status(403).json({ message: 'haven`t token' });
+    }
+    try {
+        jwt.verify(token, accsesSecret);
+        next();
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(403).json({ message: 'Uncorrect token' });
+    }
+};
+//Декодирование токена
+export const decodedToken = (token) => {
+    try {
+        const decoded = jwt.verify(token, accsesSecret);
+        return decoded;
     }
     catch (error) {
         console.error(error);
